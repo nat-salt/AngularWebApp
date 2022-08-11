@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserForRegistrationDto } from '../../interfaces/user.models';
 import { AuthenticationService } from '../../shared/services/authentication.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PasswordConfirmationValidatorService } from '../../shared/custom-validators/password-confirmation-validator.service';
 
 @Component({
   selector: 'app-register-user',
@@ -12,7 +13,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class RegisterUserComponent implements OnInit {
   registerForm!: FormGroup;
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService, private passConfiValidator: PasswordConfirmationValidatorService) { }
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -22,6 +23,8 @@ export class RegisterUserComponent implements OnInit {
       password: new FormControl('', [Validators.required]),
       confirm: new FormControl('')
     });
+    this.registerForm.get('confirm')!.setValidators([Validators.required,
+      this.passConfiValidator.validateConfirmPassword(this.registerForm.get('password')!)])
   }
 
   public validateControl = (controlName: string) => {
